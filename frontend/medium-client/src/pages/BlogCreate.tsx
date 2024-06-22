@@ -3,12 +3,15 @@ import Navbar from "../components/Navbar";
 import Spinner from "../components/Spinner";
 import { BACKEND_URL } from "../config";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
+import { modalAtomState } from "../atoms/modalAtom";
 
 export default function BlogCreate() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState("publish")
+  const setMsg = useSetRecoilState(modalAtomState)
   const navigate = useNavigate();
 
   const createBlog = async (e: any) => {
@@ -35,7 +38,7 @@ export default function BlogCreate() {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          alert(data.message);
+          setMsg(data.message);
           navigate("/blogs");
         });
 

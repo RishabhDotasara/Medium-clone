@@ -1,14 +1,19 @@
-import React from "react";
+import React, { Context, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"; // Import Axios
 import { BACKEND_URL } from "../config";
 import Spinner from "../components/Spinner";
+import { useSetRecoilState } from "recoil";
+import { modalAtomState } from "../atoms/modalAtom";
+
 
 export default function Signup(props: any) {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false)
+  const setMsg = useSetRecoilState(modalAtomState);
+
   const navigate = useNavigate()
 
   const signup = async (e: any) => {
@@ -39,11 +44,12 @@ export default function Signup(props: any) {
         console.log(data)
         if (data.error)
           {
-            alert("Erro while logging in"+data.error)
+            setMsg("Erro while logging in"+data.error)
           }
         else 
         {
           localStorage.setItem('token',data.jwt)
+          setMsg("SignUp successful!")
           setLoading(false)
           navigate("/blogs")
         }
@@ -74,12 +80,13 @@ export default function Signup(props: any) {
           }
         else 
         {
-          throw new Error("Error while signing in")
+          setMsg("Error while signing in")
         }
       })
       .then(data=>{
         console.log(data)
         localStorage.setItem('token',data.jwt)
+        setMsg("Logged in successfully!")
         setLoading(false)
         navigate("/blogs")
       })

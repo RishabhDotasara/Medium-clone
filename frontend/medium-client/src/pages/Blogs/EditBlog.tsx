@@ -3,6 +3,8 @@ import Spinner from '../../components/Spinner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BACKEND_URL } from '../../config';
 import Navbar from '../../components/Navbar';
+import { useSetRecoilState } from 'recoil';
+import { modalAtomState } from '../../atoms/modalAtom';
 
 export default function EditBlog() {
     const [loading, setLoading] = useState(false);
@@ -11,6 +13,7 @@ export default function EditBlog() {
 
     const navigate = useNavigate();
     const [action, setAction] = useState("publish");
+    const setMsg = useSetRecoilState(modalAtomState)
     const {id} = useParams();
     
   const handleSubmit = async (e: any) => {
@@ -37,13 +40,35 @@ export default function EditBlog() {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          alert(data.message);
+          setMsg(data.message);
           navigate("/blogs");
         });
 
-      3;
+      ;
     }
   };
+
+  const deleteBlog = async () => {
+    
+  
+ 
+      setLoading(true);
+      //make the request to create the blog.
+      fetch(`${BACKEND_URL}/blog/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setMsg(data.message);
+          navigate("/blogs");
+        });
+
+  }
     
     useEffect(()=>{
        
@@ -82,6 +107,9 @@ export default function EditBlog() {
             </button>
             <button className="bg-green-300 h-fit px-2 rounded py-1" onClick={()=>{setAction('publish')}}>
               Publish
+            </button>
+            <button className="bg-red-300 h-fit px-2 rounded py-1" onClick={()=>{deleteBlog()}}>
+              Delete
             </button>
           </>
         }

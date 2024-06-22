@@ -14,7 +14,7 @@ export default function Card(props: any) {
           className="bg-blue-400 w-10 h-10 rounded-full"
         />
         <h3 className="author-name font-600 font-bold items-stretch">{props.author || "Unknown"}</h3>
-        <h3 className="date text-gray-500">10 Dec 2023</h3>
+        <h3 className="date text-gray-500">{props.date}</h3>
         <h3 className="tag text-gray-500">Member-Only</h3>
       </div>
       <div className="content flex mb-8 py-4 justify-between">

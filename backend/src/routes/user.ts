@@ -43,7 +43,7 @@ userRouter.post("/signup", async (c) => {
           name:body.username
         },
       });
-      const jwt = await sign({ id: user.id }, "medium-clone");
+      const jwt = await sign({ id: user.id, username: user.name }, "medium-clone");
       return c.json({ jwt });
     }
   } catch (e) {
@@ -78,7 +78,7 @@ userRouter.post("/signin", async (c) => {
         return c.json({ message: "Invalid credentials!" });
       }
       if (user != null) {
-        const jwt = await sign({ id: user.id }, "medium-clone");
+        const jwt = await sign({ id: user.id, username:user.name }, "medium-clone");
         return c.json({ jwt });
       } else {
         c.status(403);

@@ -57,8 +57,8 @@ export default function Blogs() {
           Following
         </Link>
       </div>
-      <div className="cards w-4/5 ">
-        
+      <div className="cards w-4/5 flex items-center justify-center">
+        {blogs == "" && <h1 className="text-8xl font-bold text-gray-200 mt-20">No blogs to show</h1>}
         {blogs &&
           blogs.map((blog: any) => {
             return (
@@ -67,6 +67,7 @@ export default function Blogs() {
                 link={blog.id}
                 content={blog.content}
                 author={blog.author.name}
+                date={blog.publishedDate}
               />
             );
           })}

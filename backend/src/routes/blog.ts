@@ -41,7 +41,7 @@ blogRouter.post("/create",authMiddleware,async (c)=>{
         })
         console.log("after post")
         c.status(201);
-        return c.json({message:"Post created successfully",post})
+        return c.json({message:body.published?"Blog published successfully":"Blog saved as a Draft!",post})
     }
     catch(err)
     {
@@ -96,6 +96,9 @@ blogRouter.get("/:id",authMiddleware,async (c)=>{
             where:
             {
                 id:id
+            },
+            include:{
+                author:true
             }
         })
         c.status(200)

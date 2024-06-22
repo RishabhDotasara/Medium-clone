@@ -6,13 +6,26 @@ import Blogs from './pages/Blogs/Blogs'
 import BlogCreate from './pages/BlogCreate'
 import Drafts from './pages/Blogs/Drafts'
 import EditBlog from './pages/Blogs/EditBlog'
+import Modal from './components/Modal'
+import { createContext, useEffect, useState } from 'react'
+
+import { RecoilRoot, useRecoilValue } from 'recoil'
+import { modalAtomState } from './atoms/modalAtom'
 
 
 
 function App() {
+  const [modalActive,setModalActive] = useState(false)
+  const msg = useRecoilValue(modalAtomState)
+
+  useEffect(()=>{
+    setModalActive(true)
+  },[msg])
+  
 
   return (
     <>
+      <Modal active={modalActive} setActive={setModalActive} msg={msg}/>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Blogs/>}/>

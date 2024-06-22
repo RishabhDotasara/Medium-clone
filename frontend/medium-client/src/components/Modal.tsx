@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { IoMdClose } from "react-icons/io";
 export default function Modal(props: any) {
     const showModal= true

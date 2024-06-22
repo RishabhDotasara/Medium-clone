@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import { LiaEditSolid } from "react-icons/lia";
 import Spinner from '../components/Spinner';
 import { BACKEND_URL } from '../config';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { modalAtomState } from '../atoms/modalAtom';
 
 export default function Blog() {
 
   const [blog, setBlog]: any = useState()
   const [loading, setLoading] = useState(false)
   const {id} = useParams()
-  const setMsg = useSetRecoilState(modalAtomState)
+
   const navigate = useNavigate()
   //fetch the blog in useeffect block
   useEffect(()=>{

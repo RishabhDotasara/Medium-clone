@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Card from "./Card";
+
 import { BACKEND_URL } from "../../config";
 import Navbar from "../../components/Navbar";
 import Spinner from "../../components/Spinner";

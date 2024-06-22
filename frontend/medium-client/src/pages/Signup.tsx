@@ -1,6 +1,6 @@
-import React, { Context, useContext } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // Import Axios
+
 import { BACKEND_URL } from "../config";
 import Spinner from "../components/Spinner";
 import { useSetRecoilState } from "recoil";

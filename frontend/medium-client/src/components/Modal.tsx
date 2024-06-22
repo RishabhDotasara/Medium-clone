@@ -2,20 +2,7 @@ import React from 'react'
 import { IoMdClose } from "react-icons/io";
 export default function Modal(props: any) {
     const [showModal, setShowModal] = React.useState(true)
-    const color = {
-        error:{
-            bg: 'red',
-            text: 'Error'
-        },
-        success:{
-            bg: 'green',
-            text: 'Success'
-        },
-        warning:{
-            bg: 'yellow',
-            text: 'Warning'
-        }
-    }
+   
     if(!props.active){
         return null
     }

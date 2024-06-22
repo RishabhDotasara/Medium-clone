@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { CgSpinnerTwo } from "react-icons/cg";
 
 export default function Spinner() {

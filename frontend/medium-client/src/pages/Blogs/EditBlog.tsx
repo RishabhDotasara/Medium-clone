@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Spinner from '../../components/Spinner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BACKEND_URL } from '../../config';

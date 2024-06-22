@@ -7,9 +7,9 @@ import BlogCreate from './pages/BlogCreate'
 import Drafts from './pages/Blogs/Drafts'
 import EditBlog from './pages/Blogs/EditBlog'
 import Modal from './components/Modal'
-import { createContext, useEffect, useState } from 'react'
+import {  useEffect, useState } from 'react'
 
-import { RecoilRoot, useRecoilValue } from 'recoil'
+import {  useRecoilValue } from 'recoil'
 import { modalAtomState } from './atoms/modalAtom'
 
 

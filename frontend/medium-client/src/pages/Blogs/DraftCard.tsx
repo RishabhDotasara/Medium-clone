@@ -1,7 +1,4 @@
-import React from "react";
-import { BsThreeDots } from "react-icons/bs";
-import { CiBookmarkPlus } from "react-icons/ci";
-import { CiCircleMinus } from "react-icons/ci";
+
 import { Link } from "react-router-dom";
 
 export default function DraftCard(props: any) {

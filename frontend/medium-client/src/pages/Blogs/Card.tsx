@@ -6,8 +6,7 @@ import { CiCircleMinus } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { LuCrown } from "react-icons/lu";
 import { BACKEND_URL } from "../../config";
-import { useSetRecoilState } from "recoil";
-import { modalAtomState } from "../../atoms/modalAtom";
+
 import { ImSpinner3 } from "react-icons/im";
 import { useState } from "react";
 

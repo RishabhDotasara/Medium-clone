@@ -12,6 +12,7 @@ const authMiddleware = async (c: any, next: any) => {
 
       const decodedData = await verify( token? token: "", "medium-clone");
       await c.set('userId', decodedData.id)
+      await c.set('isMember', decodedData.member)
       console.log("Access granted!")
       await next()
     }

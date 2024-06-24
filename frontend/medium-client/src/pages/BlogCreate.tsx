@@ -5,11 +5,13 @@ import { BACKEND_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { modalAtomState } from "../atoms/modalAtom";
+import { LuCrown } from "react-icons/lu";
 
 export default function BlogCreate() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [memberOnly,setMemberOnly] = useState(false)
   const [action, setAction] = useState("publish")
   const setMsg = useSetRecoilState(modalAtomState)
   const navigate = useNavigate();
@@ -32,7 +34,8 @@ export default function BlogCreate() {
         body: JSON.stringify({
           title: title,
           content: content,
-          published: action == 'publish' ? true : false
+          published: action == 'publish' ? true : false,
+          memberOnly: memberOnly? true: false
         }),
       })
         .then((res) => res.json())
@@ -50,6 +53,7 @@ export default function BlogCreate() {
   
   return (
     <div className="min-h-screen flex items-center justify-start p-10 flex-col py-20">
+      
       {loading && <Spinner />}
       <form
         className="writing-area  w-4/6 flex flex-col gap-5 h-1/2"
@@ -60,6 +64,7 @@ export default function BlogCreate() {
         <Navbar
           actions={
             <>
+              <LuCrown className="text-xl cursor-pointer" onClick={()=>{setMemberOnly(!memberOnly)}} style={{color:memberOnly ? 'rgb(252 211 77)': "gray"}}/>
               <button className="bg-blue-300 h-fit px-2 rounded py-1" onClick={()=>{setAction('draft')}}>
                 Save Draft
               </button>

@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE "BookMark" ADD CONSTRAINT "BookMark_postID_fkey" FOREIGN KEY ("postID") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

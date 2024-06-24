@@ -11,6 +11,7 @@ import {  useEffect, useState } from 'react'
 
 import {  useRecoilValue } from 'recoil'
 import { modalAtomState } from './atoms/modalAtom'
+import ShowBookmarks from './pages/ShowBookmarks'
 
 
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/blog/create" element={<BlogCreate />} />
           <Route path="/blog/drafts" element={<Drafts />} />
           <Route path="/blog/edit/:id" element={<EditBlog />} />
+          <Route path="/user/bookmarks" element={<ShowBookmarks />} />
 
         </Routes>
       </BrowserRouter>

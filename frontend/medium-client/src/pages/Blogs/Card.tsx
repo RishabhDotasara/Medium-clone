@@ -1,11 +1,61 @@
 
 import { BsThreeDots } from "react-icons/bs";
 import { CiBookmarkPlus } from "react-icons/ci";
+import { IoBookmark } from "react-icons/io5";
 import { CiCircleMinus } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { LuCrown } from "react-icons/lu";
+import { BACKEND_URL } from "../../config";
+import { useSetRecoilState } from "recoil";
+import { modalAtomState } from "../../atoms/modalAtom";
+import { ImSpinner3 } from "react-icons/im";
+import { useState } from "react";
 
 export default function Card(props: any) {
+
+  const setMsg = useSetRecoilState(modalAtomState)
+  const [bookmarkAddLoading, setBAL] = useState(false)
+  
+
+  const addBookmark = async ()=>{
+    //make the request
+    setBAL(true)
+    await fetch(`${BACKEND_URL}/user/bookmark/${props.id}`,{
+      method:"POST",
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json"
+      }
+
+    }).then((res)=>res.json()) 
+    .then(data=>{
+      console.log(data)
+      props.bookmark(props.id)
+      setBAL(false)
+    })
+  }
+
+  const removeBookmark = async ()=>{
+    //make the request
+    setBAL(true)
+    await fetch(`${BACKEND_URL}/user/bookmark/${props.bookmarkID}`,{
+      method:"DELETE",
+      headers:{
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json"
+      }
+
+    }).then((res)=>res.json()) 
+    .then(data=>{
+      console.log(data)
+     
+      props.fetchBookmarks()
+      setBAL(false)
+    })
+  }
+
+ 
+  
   return (
     <div className="card p-6 rounded w-full  gap-4 flex flex-col min-h-[200] ">
       <div className="author-info flex items-center justify-start gap-3">
@@ -16,7 +66,8 @@ export default function Card(props: any) {
         />
         <h3 className="author-name font-600 items-stretch">{props.author || "Unknown"}</h3>
         <li className="date text-gray-500">Posted on {props.date}</li>
-        <li className="tag text-gray-500 flex items-center justify-center gap-2"><LuCrown className="text-amber-300"/>Member-Only</li>
+        
+        {props.memberOnly && <li className="tag text-gray-500 flex items-center justify-center gap-2"><LuCrown className="text-amber-300 text-xl"/></li>}
       </div>
       <div className="content flex mb-8 py-4 justify-between">
         <div className="flex flex-col gap-5 w-3/4">
@@ -31,8 +82,10 @@ export default function Card(props: any) {
             </div>
             <div className="actions flex p-4 gap-4">
               <CiCircleMinus className="text-2xl cursor-pointer" />
-              <CiBookmarkPlus className="text-2xl cursor-pointer" />
-              <BsThreeDots className="text-2xl cursor-pointer" />
+              {!bookmarkAddLoading && !props.bookmarked && <CiBookmarkPlus className="text-2xl cursor-pointer" onClick={addBookmark}/>}
+              {bookmarkAddLoading && <ImSpinner3 className="text-2xl cursor-pointer animate-spin"/>}
+              {!bookmarkAddLoading && props.bookmarked && <IoBookmark className="text-2xl cursor-pointer" onClick={removeBookmark}/>}
+              <BsThreeDots className="text-2xl cursor-pointer " />
               
             </div>
           </div>

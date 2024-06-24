@@ -33,6 +33,7 @@ export default function Navbar(props: any) {
         {active && <ul className='fixed top-20 right-10  rounded flex flex-col shadow-lg '>
             <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><Link to="">Profile</Link></li>
             <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><Link to="/blog/drafts">Drafts</Link></li>
+            <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><Link to="/user/bookmarks">BookMarks</Link></li>
             <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><button onClick={logout}>Logout</button></li>
         </ul>}
       </div>

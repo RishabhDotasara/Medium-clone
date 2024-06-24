@@ -9,11 +9,23 @@ datasource db {
 
 model User {
   id       String   @id @default(uuid())
-  email    String   @unique
+  email    String   @unique 
   name     String?
   password String
   posts    Post[]
+  bookmarks BookMark[]
+  member  Boolean @default(false)
+ 
 }
+
+model BookMark {
+  id String @id @default(uuid())
+  byID String
+  by User @relation(fields: [byID], references: [id])
+  postID String @unique
+  post Post @relation(fields: [postID], references: [id]) 
+}
+
 
 model Post {
   id        String   @id @default(uuid())
@@ -24,4 +36,5 @@ model Post {
   authorId  String
   publishedDate DateTime @default(now())
   memberOnly Boolean @default(false)
+  bookmarks BookMark[]
 }

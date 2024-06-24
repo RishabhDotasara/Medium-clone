@@ -4,12 +4,15 @@ import { LiaEditSolid } from "react-icons/lia";
 import Spinner from '../components/Spinner';
 import { BACKEND_URL } from '../config';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+import { modalAtomState } from '../atoms/modalAtom';
 
 export default function Blog() {
 
   const [blog, setBlog]: any = useState()
   const [loading, setLoading] = useState(false)
   const {id} = useParams()
+  const setMsg = useSetRecoilState(modalAtomState)
 
   const navigate = useNavigate()
   //fetch the blog in useeffect block
@@ -24,9 +27,17 @@ export default function Blog() {
     }).then(res=>res.json())
     .then(data=>{
       
-          console.log(data  )
+          console.log(data)
           // setMsg(data.message)
-          setBlog(data.blog)
+          if (data.blog)
+          {
+            setBlog(data.blog)
+          }
+          else 
+          {
+            setMsg(data.message)
+            navigate('/blogs')
+          }
        
       setLoading(false)
     

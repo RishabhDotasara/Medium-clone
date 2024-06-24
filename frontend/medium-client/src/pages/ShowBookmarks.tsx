@@ -1,28 +1,28 @@
 import  { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Card from "./Card";
-import { BACKEND_URL } from "../../config";
-import Navbar from "../../components/Navbar";
-import Spinner from "../../components/Spinner";
+import { BACKEND_URL } from "../config";
+import Spinner from "../components/Spinner";
+import Navbar from "../components/Navbar";
+import Card from "./Blogs/Card";
+
 
 export default function Blogs() {
   
-  const [blogs, setBlogs]: any = useState();
+  const [bookmarkedBlogs, setBookmarkedBlogs]: any = useState(); //bookmarked blogs
   const [loading, setLoading] = useState(false);
-  const [bookmarks, setBookmarks]: any = useState([]);
+ 
 
   const addToListBookmark = (d: any)=>{
-    setBookmarks([...bookmarks,d])
+    setBookmarkedBlogs([...bookmarkedBlogs,d])
   }
 
-  const removeFromBookmarksList = (d: any)=>{
-    setBookmarks(bookmarks.filter((item: any)=> item.id != d))
+  const removeBookmark = (d: any)=>{
+    setBookmarkedBlogs(bookmarkedBlogs.filter((bookmark: any)=>bookmark != d))
   }
- 
-  useEffect(() => {
-    //get the blogs here.
+  
+  const getBookmarks = async ()=>{
     setLoading(true);
-    fetch(`${BACKEND_URL}/blog`, {
+    fetch(`${BACKEND_URL}/user/bookmarks`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -39,14 +39,16 @@ export default function Blogs() {
       })
       .then((data) => {
         console.log(data);
-        setBlogs(data.blogsToSend);
+        setBookmarkedBlogs(data.bookmarks);
         setLoading(false);
       });
+  }
+  useEffect(() => {
+    //get the blogs here.
+    getBookmarks();
   }, []);
-
-
   return (
-    <div className="min-h-screen w-full flex items-center p-10 justify-start flex-col">
+    <div className="min-h-screen w-full flex items-center pt-20 justify-start flex-col">
       {loading && <Spinner />}
       <Navbar
         actions={
@@ -58,21 +60,13 @@ export default function Blogs() {
           </Link>
         }
       />
-      <div className="header w-4/5 p-5  flex gap-3 sticky top-14 mt-5 left-0 bg-white">
-        <Link
-          to=""
-          className="border-b-2 p-3 items-stretch border-black text-black"
-        >
-          For you
-        </Link>
-        <Link to="" className=" p-3 items-stretch text-gray-500">
-          Following
-        </Link>
-      </div>
+    
       <div className="cards w-4/5 flex items-center justify-center flex-col">
-        {blogs == "" && <h1 className="text-8xl font-bold text-gray-200 mt-20">No blogs to show</h1>}
-        {blogs &&
-          blogs.map((blog: any,index: number) => {
+         <h1 className="text-3xl font-bold my-2 text-gray-500">BookMarks</h1>
+        {bookmarkedBlogs == "" && <h1 className="text-8xl font-bold text-gray-200 mt-20">No bookmarks to show</h1>}
+        {bookmarkedBlogs &&
+          bookmarkedBlogs.map((bookmark: any,index: number) => {
+            const blog = bookmark.post;
             const date = new Date(blog.publishedDate);
             const readableDate = date.toLocaleDateString("en-US", {
               year: 'numeric',
@@ -85,14 +79,16 @@ export default function Blogs() {
                 title={blog.title}
                 link={blog.id}
                 content={blog.content}
-                author={blog.author.name}
+                // author={blog.author.name}
                 date={readableDate}
                 key={index}
                 id={blog.id}
-                bookmarked={bookmarks.includes(blog.id) || blog.bookmarked}
+                bookmarked={bookmarkedBlogs.includes(blog.id) || blog.bookmarked || bookmark.postID == blog.id}
                 bookmark={addToListBookmark}
-                removeBookmark = {removeFromBookmarksList}
                 memberOnly={blog.memberOnly}
+                removeBookmark={removeBookmark}
+                bookmarkID={bookmark.id}
+                fetchBookmarks = {getBookmarks}
               />
             );
           })}

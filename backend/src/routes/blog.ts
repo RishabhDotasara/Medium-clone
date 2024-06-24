@@ -10,7 +10,8 @@ const blogRouter = new Hono<
       JWT_SECRET: string
     },
     Variables:{
-        userId: string
+        userId: string,
+        isMember: boolean
     } 
 
     
@@ -36,7 +37,8 @@ blogRouter.post("/create",authMiddleware,async (c)=>{
                 title: body.title,
                 content: body.content,
                 authorId: authorId,
-                published: body.published || false,
+                published: body.published,
+                memberOnly: body.memberOnly
             }
         })
         console.log("after post")
@@ -91,7 +93,7 @@ blogRouter.get("/:id",authMiddleware,async (c)=>{
       }).$extends(withAccelerate());
     const id = await c.req.param('id');
     try 
-    {
+    {   
         const blog = await prisma.post.findUnique({
             where:
             {
@@ -101,8 +103,16 @@ blogRouter.get("/:id",authMiddleware,async (c)=>{
                 author:true
             }
         })
-        c.status(200)
-        return c.json({message:"Blog retrieved!",blog})
+        if ((blog?.memberOnly && c.var.isMember) || !blog?.memberOnly)
+        {
+
+            c.status(200)
+            return c.json({message:"Blog retrieved!",blog})
+        }
+        else 
+        {
+            return c.json({message:"Sorry, Member only blog"})
+        }
     }
     catch(err)
     {
@@ -134,8 +144,22 @@ blogRouter.get("/",authMiddleware,async (c)=>{
                 author:true
             }
         });
+        const blogsToSend: any = []
+        //logic to label the bookmarked blogs.
+        const bookmarks = await prisma.bookMark.findMany({
+            where:
+            {
+                byID:c.var.userId
+            }
+        })
+
+        await  blogs.map(blog=>{
+            blogsToSend
+            blogsToSend.push({...blog,bookmarked:bookmarks.find((bookmark)=>{return bookmark.postID == blog.id}) ? true: false})
+        })
+
         c.status(200)
-        return c.json({message:"Blogs retrieved!",blogs})
+        return c.json({message:"Blogs retrieved!",blogsToSend})
     }
     catch(err)
     {
@@ -143,7 +167,6 @@ blogRouter.get("/",authMiddleware,async (c)=>{
         return c.json({message:"Internal server error"})
     }
 })
-
 
 
 blogRouter.delete("/:id",authMiddleware,async (c)=>{

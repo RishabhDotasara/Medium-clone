@@ -25,24 +25,32 @@ export default function EditBlog() {
     } else {
       setLoading(true);
       //make the request to create the blog.
-      fetch(`${BACKEND_URL}/blog/update/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          title: title,
-          content: content,
-          published: action == 'publish' ? true : false
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setMsg(data.message);
-          navigate("/blogs");
-        });
+      if (action != 'delete')
+        {
+
+          fetch(`${BACKEND_URL}/blog/update/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+              title: title,
+              content: content,
+              published: action == 'publish' ? true : false
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              setMsg(data.message);
+              navigate("/blogs");
+            });
+        }
+        else 
+        {
+          deleteBlog();
+        }
 
       ;
     }
@@ -108,7 +116,7 @@ export default function EditBlog() {
             <button className="bg-green-300 h-fit px-2 rounded py-1" onClick={()=>{setAction('publish')}}>
               Publish
             </button>
-            <button className="bg-red-300 h-fit px-2 rounded py-1" onClick={()=>{deleteBlog()}}>
+            <button className="bg-red-300 h-fit px-2 rounded py-1" onClick={()=>{setAction('delete')}}>
               Delete
             </button>
           </>

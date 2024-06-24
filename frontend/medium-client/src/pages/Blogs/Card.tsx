@@ -13,7 +13,7 @@ import { useState } from "react";
 
 export default function Card(props: any) {
 
-  const setMsg = useSetRecoilState(modalAtomState)
+
   const [bookmarkAddLoading, setBAL] = useState(false)
   
 

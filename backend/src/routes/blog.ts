@@ -91,6 +91,7 @@ blogRouter.get("/:id",authMiddleware,async (c)=>{
         datasourceUrl:
           "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
       }).$extends(withAccelerate());
+
     const id = await c.req.param('id');
     try 
     {   
@@ -112,13 +113,28 @@ blogRouter.get("/:id",authMiddleware,async (c)=>{
             }
         })
 
-        let blogToSend = {...blog,bookmarked: false,bookmarkID:""}
+        //check if the particular user follows the author or not
+        const followRequest = await prisma.follow.findFirst({
+            where:{
+                followerID:c.var.userId,
+                followeeID:blog?.authorId
+            }
+        })
+
+        let blogToSend = {...blog,bookmarked: false,bookmarkID:"",following:false,followRequestID:""}
 
         if (bookmark)
         {
             blogToSend.bookmarked = true;
             blogToSend.bookmarkID = bookmark.id
         }
+
+        if (followRequest)
+        {
+            blogToSend.following = true;
+            blogToSend.followRequestID = followRequest.id
+        }
+
 
         if ((blog?.memberOnly && c.var.isMember) || !blog?.memberOnly)
         {

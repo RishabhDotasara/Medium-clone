@@ -50,7 +50,7 @@ export default function Blogs() {
       
       <div className="cards w-4/5 mt-10 flex flex-col items-center">
         
-        {blogs!= "" &&
+        {blogs &&
           blogs.map((blog: any) => {
             return (
               <DraftCard
@@ -61,7 +61,7 @@ export default function Blogs() {
               />
             );
           })}
-          {blogs == "" && <h1 className="text-8xl font-bold text-gray-200 mt-20">No drafts found!</h1>}
+          {!blogs && <h1 className="text-8xl font-bold text-gray-200 mt-20">No drafts found!</h1>}
       </div>
     </div>
   );

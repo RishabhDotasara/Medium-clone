@@ -15,7 +15,7 @@ model User {
   posts    Post[]
   bookmarks BookMark[]
   member  Boolean @default(false)
- 
+  followers Follow[]
 }
 
 model BookMark {
@@ -40,3 +40,16 @@ model Post {
   memberOnly Boolean @default(false)
   bookmarks BookMark[]
 }
+
+model Follow {
+  id String @unique @default(uuid())
+  followerID String 
+  followeeID String //the user that has been followed.
+  followee User @relation(fields: [followeeID],references: [id])
+
+
+  @@unique([followerID, followeeID])  //ie the combination of both these fields should be unique.
+}
+
+//notification model.
+

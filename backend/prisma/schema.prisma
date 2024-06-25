@@ -22,8 +22,10 @@ model BookMark {
   id String @id @default(uuid())
   byID String
   by User @relation(fields: [byID], references: [id])
-  postID String @unique
+  postID String 
   post Post @relation(fields: [postID], references: [id]) 
+
+  @@unique([byID,postID])
 }
 
 

@@ -103,11 +103,28 @@ blogRouter.get("/:id",authMiddleware,async (c)=>{
                 author:true
             }
         })
+
+        //check if bookmark exists
+        const bookmark = await prisma.bookMark.findFirst({
+            where:{
+                byID:c.var.userId,
+                postID:blog?.id
+            }
+        })
+
+        let blogToSend = {...blog,bookmarked: false,bookmarkID:""}
+
+        if (bookmark)
+        {
+            blogToSend.bookmarked = true;
+            blogToSend.bookmarkID = bookmark.id
+        }
+
         if ((blog?.memberOnly && c.var.isMember) || !blog?.memberOnly)
         {
 
             c.status(200)
-            return c.json({message:"Blog retrieved!",blog})
+            return c.json({message:"Blog retrieved!",blog:blogToSend})
         }
         else 
         {

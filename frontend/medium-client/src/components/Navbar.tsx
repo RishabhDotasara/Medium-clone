@@ -30,11 +30,11 @@ export default function Navbar(props: any) {
       <div className='flex gap-9 items-center justify-center'>
         {props.actions}
         <div className='bg-red-300 rounded-full h-10 w-10 flex items-center justify-center  cursor-pointer' onClick={()=>{setActive(!active)}}>R</div>
-        {active && <ul className='fixed top-20 right-10  rounded flex flex-col shadow-lg '>
+        {active && <ul className='fixed top-20 right-10 bg-white rounded flex flex-col shadow-lg '>
             <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><Link to="">Profile</Link></li>
             <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><Link to="/blog/drafts">Drafts</Link></li>
             <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><Link to="/user/bookmarks">BookMarks</Link></li>
-            <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer'><button onClick={logout}>Logout</button></li>
+            <li className='hover:bg-gray-100 w-full text-center px-5 py-2 cursor-pointer text-red-700'><button onClick={logout}>Logout</button></li>
         </ul>}
       </div>
     </div>

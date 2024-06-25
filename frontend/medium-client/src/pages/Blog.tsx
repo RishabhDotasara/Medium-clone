@@ -56,7 +56,7 @@ export default function Blog() {
       },
     })
       .then((res) => res.json())
-      .then(async (data) => {
+      .then(async () => {
         // console.log(data);
         await getBookmark();
         await setBAL(false);
@@ -94,8 +94,8 @@ export default function Blog() {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
+        // console.log(data);
         getFollow()
         setFollowing(true);
         setFolLoading(false)

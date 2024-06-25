@@ -20,6 +20,30 @@ export default function Blog() {
 
   const [bookmarkAddLoading, setBAL] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [folLoading, setFolLoading] = useState(false);
+
+  //bookmark functions
+  const getBookmark = async () => {
+    // setBAL(true);
+    await fetch(`${BACKEND_URL}/user/bookmark/post/${blog.id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data);
+
+        setBlog({ ...blog, bookmarkID: data.bookmark.id });
+        // console.log("New bookmark id sent!")
+        // console.log(blog)
+        setBookmarked(true);
+        setBAL(false);
+      });
+  };
 
   const addBookmark = async () => {
     //make the request
@@ -32,11 +56,11 @@ export default function Blog() {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        
-        setBAL(false);
-        setBookmarked(true);
+      .then(async (data) => {
+        // console.log(data);
+        await getBookmark();
+        await setBAL(false);
+        await setBookmarked(true);
       });
   };
 
@@ -47,20 +71,77 @@ export default function Blog() {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
-        
       },
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
 
         setBAL(false);
         setBookmarked(false);
       });
   };
 
-  //fetch the blog in useeffect block
-  useEffect(() => {
+  //following function
+  const addFollower = async () => {
+    setFolLoading(true)
+    const followeeId = blog.author.id;
+    //create a request to make a follow request
+    fetch(`${BACKEND_URL}/user/follow/${followeeId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        getFollow()
+        setFollowing(true);
+        setFolLoading(false)
+      });
+  };
+
+  const removeFollower = async () => {
+    setFolLoading(true)
+    const requestID = blog.followRequestID;
+    fetch(`${BACKEND_URL}/user/follow/${requestID}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data);
+        setFolLoading(false)
+        setFollowing(false)
+      });
+  };
+
+  const getFollow = async () => {
+    await fetch(`${BACKEND_URL}/user/follow/followee/${blog.author.id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data);
+
+        setBlog({ ...blog, followRequestID: data.request.id});
+        // console.log("New bookmark id sent!")
+        // console.log(blog)
+        // setBookmarked(true);
+        // setBAL(false);
+      });
+  
+  };
+
+  //fetching function for initial load
+  const getBlog = async () => {
     setLoading(true);
     fetch(`${BACKEND_URL}/blog/${id}`, {
       method: "GET",
@@ -71,11 +152,12 @@ export default function Blog() {
     })
       .then((res) => res.json())
       .then((data: any) => {
-        console.log(data);
+        // console.log(data);
         // setMsg(data.message)
         if (data.blog) {
           setBlog(data.blog);
-          setBookmarked(data.blog.bookmarked)
+          setBookmarked(data.blog.bookmarked);
+          setFollowing(data.blog.following);
         } else {
           setMsg(data.message);
           navigate("/blogs");
@@ -83,6 +165,11 @@ export default function Blog() {
 
         setLoading(false);
       });
+  };
+
+  //fetch the blog in useeffect block
+  useEffect(() => {
+    getBlog();
   }, []);
 
   return (
@@ -116,30 +203,50 @@ export default function Blog() {
             />
             <h3 className="text-xl">{blog && blog.author.name}</h3>
           </div>
-          <button className="bg-black text-white p-2 rounded-full px-3">
-            Follow
-          </button>
+          {!following && (
+            <button
+              className="bg-black text-white p-2 rounded-full px-3 flex gap-2 items-center justify-center transition-1"
+              onClick={() => {
+                addFollower();
+              }}
+              
+            >
+              Follow
+              {folLoading && <ImSpinner8 className="text-xl animate-spin transition duration-500" />}
+            </button>
+          )}
+          {following && (
+            <button
+              className="bg-white border-2 border-black text-black p-2 rounded-full px-3 flex gap-2 items-center justify-center"
+              
+              onClick={removeFollower}
+            >
+              Following
+              {folLoading && <ImSpinner8 className="text-xl animate-spin" />}
+            </button>
+          )}
         </div>
         <div className="actions w-full border-t-2 p-3 flex gap-2 items-center justify-start">
-          {(bookmarked) && !bookmarkAddLoading &&(
+          {bookmarked && !bookmarkAddLoading && (
             <IoBookmark
               className="text-3xl cursor-pointer"
               onClick={() => {
                 removeBookmark();
-                setBookmarked(false)
+                setBookmarked(false);
               }}
             />
           )}
-          {(!bookmarked) && !bookmarkAddLoading &&(
+          {!bookmarked && !bookmarkAddLoading && (
             <CiBookmarkPlus
               className="text-3xl cursor-pointer"
               onClick={() => {
                 addBookmark();
-                
               }}
             />
           )}
-          {bookmarkAddLoading && <ImSpinner8 className="text-xl animate-spin"/>}
+          {bookmarkAddLoading && (
+            <ImSpinner8 className="text-xl animate-spin" />
+          )}
         </div>
       </div>
       {loading && (

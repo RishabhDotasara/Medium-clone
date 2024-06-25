@@ -1,14 +1,11 @@
 
-import { BsThreeDots } from "react-icons/bs";
+
 
 import { IoBookmark } from "react-icons/io5";
 
 import { Link } from "react-router-dom";
 import { LuCrown } from "react-icons/lu";
-import { BACKEND_URL } from "../../config";
 
-import { ImSpinner3 } from "react-icons/im";
-import { useState } from "react";
 
 export default function Card(props: any) {
 

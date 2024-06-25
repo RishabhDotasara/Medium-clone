@@ -74,7 +74,7 @@ export default function Blog() {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         // console.log(data);
 
         setBAL(false);
@@ -112,7 +112,7 @@ export default function Blog() {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         // console.log(data);
         setFolLoading(false)
         setFollowing(false)

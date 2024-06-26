@@ -42,7 +42,7 @@ model Post {
 }
 
 model Follow {
-  id String @unique @default(uuid())
+  id String @id @default(uuid())
   followerID String 
   followeeID String //the user that has been followed.
   followee User @relation(fields: [followeeID],references: [id])
@@ -52,4 +52,10 @@ model Follow {
 }
 
 //notification model.
-
+model Notification{
+  id String @id @default(uuid())
+  generator String  //this is the user that trigerred the generation go notification
+  recepients String[] 
+  message String
+  //for now we'll keep it simple and not make any relations
+}

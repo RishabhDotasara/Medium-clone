@@ -2,11 +2,13 @@ import  { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { IoIosNotificationsOutline } from "react-icons/io";
 import Notification from './Notification';
+import { BACKEND_URL } from '../config';
 
 
 export default function Navbar(props: any) {
     const [active,setActive] = useState<boolean>(false)
     const [notActive, setNotActive] = useState(false)
+    const [notifications, setNotifications] = useState([])
     const navigate = useNavigate()
 
     const logout = async ()=>{
@@ -14,17 +16,36 @@ export default function Navbar(props: any) {
       navigate("/signin")
     }
 
+    const getNotifications = async ()=>{
+      fetch(`${BACKEND_URL}/user/notifications`,{
+        method:"GET",
+        headers:{
+          Authorization:`Bearer ${localStorage.getItem('token')}`
+        }
+      }).then(res=>res.json())
+      .then((data: any)=>{
+        console.log(data)
+        //filter the notifications that are for the user.
+        setNotifications(data.notifications.filter((notification:any)=>notification.recepients.includes(data.userID)))
+      })
+    }
+
+    const removeNotification = async (id: any)=>{
+      setNotifications(notifications.filter((notification:any)=>notification.id!=id))
+    }
     //logged in checker
     useEffect(()=>{
       if (!localStorage.getItem('token'))
       {
         navigate("/signin")
       }
+      else 
+      {
+        getNotifications()
+      }
     },[])
 
-    useEffect(()=>{
-      
-    },[active])
+    
 
   return (
     // @ts-ignore
@@ -33,13 +54,15 @@ export default function Navbar(props: any) {
       <div className='flex gap-9 items-center justify-center'>
         {props.actions}
         <div className="notificaton-center relative p-2 flex items-center justify-center">
-        <div className="counter absolute bg-red-600 rounded-full px-2 text-sm text-white font-bold right-0 top-0 cursor-pointer" onClick={()=>{setNotActive(!notActive)}}>10</div>
+        {notifications.length != 0 && <div className="counter absolute bg-red-600 rounded-full px-2 text-sm text-white font-bold right-0 top-0 cursor-pointer" onClick={()=>{setNotActive(!notActive)}}>{notifications.length}</div>}
         <IoIosNotificationsOutline className='text-4xl cursor-pointer' onClick={()=>{setNotActive(!notActive)}}/>
-        {notActive && <div className='notifications-list absolute bg-white top-20 right-0 shadow-lg p-3 rounded w-60'>
-          <Notification/>
-          <Notification/>
-          <Notification/>
-          <Notification/>
+        {notActive && <div className='notifications-list absolute bg-white top-20 right-0 shadow-lg p-3 rounded w-64'>
+          {notifications.length != 0  && notifications.map((notification:any)=>{
+            return (
+              <Notification notification={notification} remove={removeNotification}/>
+            )
+          })}
+          {notifications.length ==0 && (<h1>No new notifications!</h1>)}
         </div>}
         </div>
         <div className='bg-red-300 rounded-full h-10 w-10 flex items-center justify-center  cursor-pointer' onClick={()=>{setActive(!active)}}>R</div>

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client/edge";
+import { PrismaClient, User } from "@prisma/client/edge";
 import z from "zod";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign, verify } from "hono/jwt";
@@ -177,7 +177,7 @@ userRouter.get("/bookmark/post/:id", authMiddleware, async (c) => {
     if (bookmark) {
       // console.log(bookmark);
       c.status(200);
-      return c.json({ message: "Successful", bookmark:bookmark[0] });
+      return c.json({ message: "Successful", bookmark: bookmark[0] });
     } else {
       return c.json({ message: "Some error occured!" });
     }
@@ -189,95 +189,214 @@ userRouter.get("/bookmark/post/:id", authMiddleware, async (c) => {
 //followers routes
 
 //create a follow
-userRouter.post("/follow/:id",authMiddleware,async (c)=>{
+userRouter.post("/follow/:id", authMiddleware, async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl:
       "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
   }).$extends(withAccelerate());
 
-  const followeeID = c.req.param('id')
-  const followerID = c.var.userId
+  const followeeID = c.req.param("id");
+  const followerID = c.var.userId;
 
-  try{
-
+  try {
     const follow = await prisma.follow.create({
-      data:{
-        followerID:followerID,
-        followeeID:followeeID
-      }
-    })
-    c.status(201)
-    return c.json({message:"Follow request created successfully!"})
-  
-  }
-
-  catch(err)
-  {
+      data: {
+        followerID: followerID,
+        followeeID: followeeID,
+      },
+    });
+    c.status(201);
+    return c.json({ message: "Follow request created successfully!" });
+  } catch (err) {
     c.status(500);
-    c.json({message:"Error creating a follow request."})
+    c.json({ message: "Error creating a follow request." });
   }
-  
-})
+});
 
-userRouter.delete("/follow/:id",authMiddleware,async (c)=>{
+userRouter.delete("/follow/:id", authMiddleware, async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl:
       "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
   }).$extends(withAccelerate());
 
-  const followID = c.req.param('id')
-  const followerID = c.var.userId
+  const followID = c.req.param("id");
+  const followerID = c.var.userId;
 
-  try{
-
+  try {
     const follow = await prisma.follow.delete({
-      where:{
-        id:followID
-      }
-    })
-    c.status(201)
-    return c.json({message:"Follow request deleted successfully!"})
-  
-  }
-
-  catch(err)
-  {
+      where: {
+        id: followID,
+      },
+    });
+    c.status(201);
+    return c.json({ message: "Follow request deleted successfully!" });
+  } catch (err) {
     c.status(500);
-    c.json({message:"Error deleting a follow request."})
+    c.json({ message: "Error deleting a follow request." });
   }
-  
-})
+});
 
 //return follow request id given follower id and blog id
-userRouter.get("/follow/followee/:id",authMiddleware,async (c)=> {
+userRouter.get("/follow/followee/:id", authMiddleware, async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl:
       "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
   }).$extends(withAccelerate());
   const followeeID = c.req.param("id");
-  try 
-  {
-
+  try {
     const request = await prisma.follow.findFirst({
-      where:{
-        followerID:c.var.userId,
-        followeeID:followeeID
-      }
-    })
-    if (request)
+      where: {
+        followerID: c.var.userId,
+        followeeID: followeeID,
+      },
+    });
+    if (request) {
+      return c.json({ message: "Successfull retrieval", request });
+    } else {
+      c.status(500);
+    }
+  } catch (err) {
+    c.status(500);
+    c.json({ message: "Error on the server side." });
+  }
+});
+
+//Notification routes
+userRouter.post("/notify", authMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl:
+      "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
+  }).$extends(withAccelerate());
+  const body = await c.req.json();
+  let message: string;
+
+  //first get the list of all followers
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: c.var.userId,
+      },
+    });
+
+    if (body.type == "post") {
+
+      //TODO: add a link to the new post in the notification
+
+      message = "New post by " + user?.name;
+
+      const followers = await prisma.follow.findMany({
+        where: {
+          followeeID: c.var.userId,
+        },
+      });
+      //get the followers id in the followers list.
+      const followerIDs: string[] = followers.map(
+        (follow) => follow.followerID
+      );
+
+      //create the notificaton
+      const notification = await prisma.notification.create({
+        data: {
+          generator: c.var.userId,
+          recepients: followerIDs,
+          message: message,
+        },
+      });
+
+      return c.json({
+        message: "Successfull creation for new post!",
+        followers: followerIDs,
+      });
+    }
+
+    else if (body.type == "follow")
     {
-      return c.json({message:"Successfull retrieval",request})
+        //create the notification
+        const notification = await prisma.notification.create({
+          data:{
+            generator:c.var.userId,
+            recepients:[body.followee],
+            message: user?.name + " started following you!"
+          }
+        }) 
+
+        return c.json({message:"Follow request successfull!"})
+    }
+
+  } catch (err) {
+    c.status(500);
+    return c.json({ message: "Error while creating notification." + err });
+  }
+});
+
+//get the notifications
+userRouter.get("/notifications", authMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl:
+      "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
+  }).$extends(withAccelerate());
+
+  try {
+    const notifications = await prisma.notification.findMany({});
+
+    if (notifications) {
+      return c.json({
+        message: "Notifications retrieved successfully!",
+        notifications,
+        userID:c.var.userId
+      });
+    } else {
+      return c.json({ message: "No notifications." });
+    }
+  } catch (err) {
+    c.status(200);
+    c.json({ message: "Error on server " + err });
+  }
+});
+
+//delete the notification
+userRouter.delete("/notification/:id",authMiddleware,async (c)=>{
+  const prisma = new PrismaClient({
+    datasourceUrl:
+      "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMwZjk4ODItM2RkOC00ZGY5LTg5NzQtNWZmNWZkN2E0MjMxIiwidGVuYW50X2lkIjoiM2QyMzEzZjE0MmNmODFlYjY4Njc2NTRjN2NhMzkwMjRlODUxYzVjNDVmOGI5MjlmMjU2YzRhMzkyZGFkZWQyMyIsImludGVybmFsX3NlY3JldCI6IjNiNmQwNzg1LTE2NDgtNGZiMS04N2Q0LWEwZmVjODUxYmU4ZiJ9._5nBNLjJ99FIz_iEbeBX7V6CoqYgPYdYgntCPw7Prn0",
+  }).$extends(withAccelerate());
+
+  try {
+    const id = c.req.param("id")
+    const notification = await prisma.notification.findUnique({
+      where:{
+        id:id
+      }
+    });
+
+    //now update the recepients list on the notification
+    if (notification?.recepients.length || 0 > 1)
+    {
+
+      await prisma.notification.update({
+        where:{
+          id:notification?.id
+        },
+        data:{
+          recepients:notification?.recepients.filter(r=>r!=c.var.userId)
+        }
+      })
     }
     else 
     {
-      c.status(500)
+      await prisma.notification.delete({
+        where:{
+          id:id
+        }
+      })
     }
-  }
-  catch(err)
-  {
-    c.status(500);
-    c.json({message:"Error on the server side."})
-  }
 
+    c.status(202);
+    return c.json({message:"Notification deleted!"})
+    
+  } catch (err) {
+    c.status(200);
+    return c.json({ message: "Error on server " + err });
+  }
 })
 export default userRouter;

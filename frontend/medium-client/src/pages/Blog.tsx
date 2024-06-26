@@ -99,6 +99,7 @@ export default function Blog() {
         getFollow()
         setFollowing(true);
         setFolLoading(false)
+        createNotification();
       });
   };
 
@@ -139,6 +140,22 @@ export default function Blog() {
       });
   
   };
+
+  const createNotification = async ()=>{
+    fetch(`${BACKEND_URL}/user/notify`,{
+      method:"POST",
+      body:JSON.stringify({
+        type:"follow",
+        followee:blog.author.id
+      }),
+      headers:{
+        Authorization:`Bearer ${localStorage.getItem('token')}`
+      }
+    }).then(res=>res.json())
+    .then(data=>{
+      console.log(data.message)
+    })
+  }
 
   //fetching function for initial load
   const getBlog = async () => {

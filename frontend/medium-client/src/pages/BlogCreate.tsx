@@ -42,6 +42,10 @@ export default function BlogCreate() {
         .then((data) => {
           console.log(data);
           setMsg(data.message);
+          if (action == "publish")
+            {
+              createNotification()
+            }
           navigate("/blogs");
         });
 
@@ -49,6 +53,20 @@ export default function BlogCreate() {
     }
   };
 
+  const createNotification = async ()=>{
+    fetch(`${BACKEND_URL}/user/notify`,{
+      method:"POST",
+      body:JSON.stringify({
+        type:"post",
+      }),
+      headers:{
+        Authorization:`Bearer ${localStorage.getItem('token')}`
+      }
+    }).then(res=>res.json())
+    .then(data=>{
+      console.log(data.message)
+    })
+  }
  
   
   return (

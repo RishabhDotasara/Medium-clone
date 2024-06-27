@@ -14,7 +14,7 @@ export default function BlogCreate() {
   const [memberOnly,setMemberOnly] = useState(false)
   const [action, setAction] = useState("publish")
   const setMsg = useSetRecoilState(modalAtomState)
-  const [blogId, setBlogId] = useState("")
+  
   const navigate = useNavigate();
 
   const createBlog = async (e: any) => {

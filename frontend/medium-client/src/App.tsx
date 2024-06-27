@@ -25,7 +25,7 @@ function App() {
   
 
   return (
-    <>
+    <div>
       <Modal active={modalActive} setActive={setModalActive} msg={msg}/>
       <BrowserRouter>
         <Routes>
@@ -41,7 +41,7 @@ function App() {
 
         </Routes>
       </BrowserRouter>
-    </>
+    </div>
   )
 }
 

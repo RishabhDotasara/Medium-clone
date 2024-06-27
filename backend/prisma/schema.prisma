@@ -16,6 +16,7 @@ model User {
   bookmarks BookMark[]
   member  Boolean @default(false)
   followers Follow[]
+  following String[] 
 }
 
 model BookMark {
@@ -57,5 +58,6 @@ model Notification{
   generator String  //this is the user that trigerred the generation go notification
   recepients String[] 
   message String
+  blogLink String @default("")
   //for now we'll keep it simple and not make any relations
 }

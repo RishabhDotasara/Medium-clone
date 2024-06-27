@@ -205,6 +205,28 @@ userRouter.post("/follow/:id", authMiddleware, async (c) => {
         followeeID: followeeID,
       },
     });
+
+    //add the followee to the users follwers list.
+    const user = await prisma.user.findUnique({
+      where:{
+        id:c.var.userId
+      },
+      select:{
+        following:true
+      }
+    })
+    const prevFollowing = user?.following
+    const following = [...prevFollowing || "",followeeID]
+    // now update the followers list
+    await prisma.user.update({
+      where:{
+        id:c.var.userId
+      },
+      data:{
+        following:following
+      }
+    })
+
     c.status(201);
     return c.json({ message: "Follow request created successfully!" });
   } catch (err) {
@@ -223,11 +245,38 @@ userRouter.delete("/follow/:id", authMiddleware, async (c) => {
   const followerID = c.var.userId;
 
   try {
-    const follow = await prisma.follow.delete({
+    const follow = await prisma.follow.findUnique({
       where: {
         id: followID,
       },
     });
+
+    //remove from folowers list.
+    const user = await prisma.user.findUnique({
+      where:{
+        id:c.var.userId
+      },
+      select:{
+        following:true
+      }
+    })
+    const prevFollowing = user?.following
+    const following = prevFollowing?.filter(followee=>followee!=follow?.followeeID)
+    // now update the followers list
+    await prisma.user.update({
+      where:{
+        id:c.var.userId
+      },
+      data:{
+        following:following
+      }
+    })
+    await prisma.follow.delete({
+      where:{
+        id:follow?.id
+      }
+    })
+
     c.status(201);
     return c.json({ message: "Follow request deleted successfully!" });
   } catch (err) {
@@ -300,6 +349,7 @@ userRouter.post("/notify", authMiddleware, async (c) => {
           generator: c.var.userId,
           recepients: followerIDs,
           message: message,
+          blogLink:body.link 
         },
       });
 

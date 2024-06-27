@@ -22,6 +22,7 @@ export default function Blog() {
   const [bookmarked, setBookmarked] = useState(false);
   const [following, setFollowing] = useState(false);
   const [folLoading, setFolLoading] = useState(false);
+  const [userId, setUserId] = useState()
 
   //bookmark functions
   const getBookmark = async () => {
@@ -173,6 +174,7 @@ export default function Blog() {
         // setMsg(data.message)
         if (data.blog) {
           setBlog(data.blog);
+          setUserId(data.userID)
           setBookmarked(data.blog.bookmarked);
           setFollowing(data.blog.following);
         } else {
@@ -194,12 +196,12 @@ export default function Blog() {
       <Navbar
         actions={
           <>
-            <LiaEditSolid
+            {blog && userId == blog.author.id && <LiaEditSolid
               className="text-3xl cursor-pointer"
               onClick={() => {
                 navigate(`/blog/edit/${id}`);
               }}
-            />
+            />}
           </>
         }
       />

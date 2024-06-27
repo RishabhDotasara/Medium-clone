@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "./Card";
 import { BACKEND_URL } from "../../config";
@@ -6,19 +6,20 @@ import Navbar from "../../components/Navbar";
 import Spinner from "../../components/Spinner";
 
 export default function Blogs() {
-  
   const [blogs, setBlogs]: any = useState();
+  const [blogsToRender, setBlogsToRender]: any = useState()
   const [loading, setLoading] = useState(false);
   const [bookmarks, setBookmarks]: any = useState([]);
+  const [page, setPage] = useState("forYou");
 
-  const addToListBookmark = (d: any)=>{
-    setBookmarks([...bookmarks,d])
-  }
+  const addToListBookmark = (d: any) => {
+    setBookmarks([...bookmarks, d]);
+  };
 
-  const removeFromBookmarksList = (d: any)=>{
-    setBookmarks(bookmarks.filter((item: any)=> item.id != d))
-  }
- 
+  const removeFromBookmarksList = (d: any) => {
+    setBookmarks(bookmarks.filter((item: any) => item.id != d));
+  };
+
   useEffect(() => {
     //get the blogs here.
     setLoading(true);
@@ -26,8 +27,7 @@ export default function Blogs() {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-     
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     })
       .then((res) => {
@@ -40,10 +40,17 @@ export default function Blogs() {
       .then((data) => {
         console.log(data);
         setBlogs(data.blogsToSend);
+        setBlogsToRender(data.blogsToSend);
         setLoading(false);
       });
   }, []);
 
+  const loadFollowing = async ()=>{
+    setPage("Following");
+    setLoading(true)
+    setBlogsToRender(await blogsToRender.filter((blog:any)=>blog.following))
+    setLoading(false)
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center p-10 justify-start flex-col">
@@ -59,26 +66,47 @@ export default function Blogs() {
         }
       />
       <div className="header w-4/5 p-5  flex gap-3 sticky top-14 mt-5 left-0 bg-white">
-        <Link
-          to=""
-          className="border-b-2 p-3 items-stretch border-black text-black"
+        <div
+          className="p-3 items-stretch cursor-pointer"
+          style={{
+            color: page == "forYou" ? "black" : "gray",
+            borderBottom:page=="forYou" ? 1+"px solid":"none",
+            borderColor: page == "forYou" ? "black" : "gray",
+          }}
+          onClick={() => {
+            setPage("forYou");
+            setBlogsToRender(blogs)
+          }}
         >
           For you
-        </Link>
-        <Link to="" className=" p-3 items-stretch text-gray-500">
+        </div>
+        <div
+          className=" p-3 items-stretch text-gray-500 cursor-pointer "
+          onClick={() => {
+            loadFollowing()
+          }}
+          style={{
+            color: page == "Following" ? "black" : "gray",
+            borderBottom:page=="Following" ? 1+"px solid":"none",
+            borderColor: page == "Following" ? "black" : "gray",
+          }}
+        >
           Following
-        </Link>
+        </div>
       </div>
       <div className="cards w-4/5 flex items-center justify-center flex-col">
-        {blogs == "" && <h1 className="text-8xl font-bold text-gray-200 mt-20">No blogs to show</h1>}
-        {blogs &&
-          blogs.map((blog: any,index: number) => {
+        {blogs == "" && (
+          <h1 className="text-8xl font-bold text-gray-200 mt-20">
+            No blogs to show
+          </h1>
+        )}
+        {blogsToRender &&
+          blogsToRender.map((blog: any, index: number) => {
             const date = new Date(blog.publishedDate);
             const readableDate = date.toLocaleDateString("en-US", {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-             
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             });
             return (
               <Card
@@ -91,7 +119,7 @@ export default function Blogs() {
                 id={blog.id}
                 bookmarked={bookmarks.includes(blog.id) || blog.bookmarked}
                 bookmark={addToListBookmark}
-                removeBookmark = {removeFromBookmarksList}
+                removeBookmark={removeFromBookmarksList}
                 memberOnly={blog.memberOnly}
               />
             );

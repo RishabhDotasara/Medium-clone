@@ -14,6 +14,7 @@ export default function BlogCreate() {
   const [memberOnly,setMemberOnly] = useState(false)
   const [action, setAction] = useState("publish")
   const setMsg = useSetRecoilState(modalAtomState)
+  const [blogId, setBlogId] = useState("")
   const navigate = useNavigate();
 
   const createBlog = async (e: any) => {
@@ -43,9 +44,9 @@ export default function BlogCreate() {
           console.log(data);
           setMsg(data.message);
           if (action == "publish")
-            {
-              createNotification()
-            }
+          {
+            createNotification(data.post.id)
+          }
           navigate("/blogs");
         });
 
@@ -53,11 +54,12 @@ export default function BlogCreate() {
     }
   };
 
-  const createNotification = async ()=>{
+  const createNotification = async (blogLink: string)=>{
     fetch(`${BACKEND_URL}/user/notify`,{
       method:"POST",
       body:JSON.stringify({
         type:"post",
+        link:blogLink
       }),
       headers:{
         Authorization:`Bearer ${localStorage.getItem('token')}`
